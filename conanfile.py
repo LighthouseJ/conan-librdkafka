@@ -76,16 +76,6 @@ class LibrdkafkaConan(ConanFile):
            include(${CMAKE_BINARY_DIR}/../../conanbuildinfo.cmake)
            conan_basic_setup()''')
 
-        # Respect Conan's shared/fPIC options
-        self.output.info('Patching src/CMakeLists.txt')
-        tools.replace_in_file(
-            os.sep.join([self.folder_name, "src", "CMakeLists.txt"]),
-            "add_library(rdkafka SHARED ${sources})",
-            '''add_definitions(-D{})
-            add_library(rdkafka ${{sources}})'''.format(
-                'LIBRDKAFKA_EXPORTS' if self.options.shared else
-                'LIBRDKAFKA_STATICLIB'))
-
         # Some situations like using a bad passphrase causes rk to never be initialized
         # so calling this function would cause a segfault.  Input validation would be helpful.
         tools.replace_in_file(os.sep.join([self.folder_name, "src", "rdkafka.c"]),
